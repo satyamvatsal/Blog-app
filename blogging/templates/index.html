@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}
+    Home | Blog
+{% endblock title %}
+
+{% block body %}
+<h1 class="mb-5 text-center fw-bold lh-1">Welcome to our Blog</h1>
+{% if latest_post_list %}
+    <div class="row">
+    {% for post in latest_post_list %}
+        <div class="col-md-3">
+            <div class="card" style="width: 18rem margin:15rem;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">{{post.pub_date}}</h6>
+                    <p class="card-text">{{ post.content|truncatechars:100|safe }}</p>
+                    <a href="/blog/post/{{ post.id }}/" class="btn btn-primary">Read more</a>
+                    
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    <p>No posts are available.</p>
+{% endif %}
+{% endblock body %}

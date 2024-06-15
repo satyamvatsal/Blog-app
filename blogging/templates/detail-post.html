@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}
+{{title}}
+{% endblock title %}
+{% block body %}
+
+<h3 class="my-3 pb-3 fw-bold">{{title}}</h3>
+<p class="my-3 pb-2">by: Author | {{date}} </p>
+<p>
+    {{content|safe}}
+</p>
+{% endblock body %}
+{% block comment %}
+
+<div class="comment-section">
+    <h3>Leave a comment</h3>
+    <!-- Comment Form -->
+    <form id="comment-form" method="post">
+        {% csrf_token %}
+        <div class="comment-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control mb-2" id="username">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            </div>
+            <div class="form-group mb-2">
+                <label for="comment">Comment</label>
+                <textarea class="form-control" id="comment" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" id="post-comment">Post Comment</button>
+        </div>
+    </form>
+</div>
+</div>
+
+<div class="container mt-2">
+    <h3 class="pb-1">Past Comments</h3>
+    <ul class="list-unstyled">
+        {% for comment in comments %}
+        <li>
+            <div class="card comment-card">
+                <div class="card-body">
+                    <div class="comment-header">
+                        <div class="comment-username fs-15">{{ comment.username }} . {{comment.pub_date}}</div>
+                    </div>
+                    <div class="mt-2 fs-8 comment-preview" id = "preview-{{comment.id}}">{{ comment.comment_text|truncatechars:125 }}
+                    </div>
+                    
+                    
+                    <div class = "comment-full" id="full-{{comment.id}}" style="display:none;">{{comment.comment_text}}</div>
+                    {% if comment.comment_text|length > 125 %}
+                    <input class="view-more-btn btn btn-link" type="button" data-comment-id = "{{comment.id}}" value="view more">
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+<script>
+
+    document.querySelectorAll('.view-more-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          commentId = this.getAttribute('data-comment-id');
+          var commentPreview = document.querySelector('#preview-' + commentId);
+          var commentFull = document.querySelector('#full-' + commentId);
+          
+          if (commentPreview.style.display === 'none') {
+            commentPreview.style.display = 'inline';
+            commentFull.style.display = 'none';
+            this.value = 'view more';
+          } else {
+            commentPreview.style.display = 'none';
+            commentFull.style.display = 'inline';
+            this.value = 'view less';
+          }
+        });
+      });
+
+    document.getElementById('post-comment').addEventListener('click', function () {
+        var username = document.getElementById('username').value;
+        var commentText = document.getElementById('comment').value;
+        if (username && commentText) {
+            fetch('submit_comment/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `username=${encodeURIComponent(username)}&comment_text=${encodeURIComponent(commentText)}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                });
+        } else {
+            alert('Please enter a username and comment');
+        }
+    });
+
+</script>
+{% endblock comment %}
+
