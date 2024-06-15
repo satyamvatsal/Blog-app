@@ -7,6 +7,9 @@ from .models import post,comment
 
 
 def index(request):
+    if(post.objects.all().count() == 0):
+        return render(request,"index.html")
+    
     latest_post_list = post.objects.all().order_by("-pub_date")
     latest_postId = post.objects.latest('id').id
     context = {

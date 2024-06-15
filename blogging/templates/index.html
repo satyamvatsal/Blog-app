@@ -7,6 +7,7 @@
 <h1 class="mb-5 text-center fw-bold lh-1">Welcome to our Blog</h1>
 {% if latest_post_list %}
     <div class="row">
+    {% if latest_post_list %}
     {% for post in latest_post_list %}
         <div class="col-md-3">
             <div class="card" style="width: 18rem margin:15rem;">
@@ -20,6 +21,9 @@
             </div>
         </div>
     {% endfor %}
+    {% else %}
+    <p>No post till now </p>
+    {% endif %}
     </div>
 {% else %}
     <p>No posts are available.</p>
